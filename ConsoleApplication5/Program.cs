@@ -80,7 +80,7 @@ namespace ConsoleApplication5
             // TODO: IMPRIMIR UM INTRODUCAO SOBRE O QUE ESTA A FAZER, EM QUE IP E QUAIS OS CANAIS SUBSCRITOS
 
 
-            MqttClient m_cClient = new MqttClient(IPAddress.Parse("192.168.1.72"));
+            MqttClient m_cClient = new MqttClient(IPAddress.Parse("192.168.237.193"));
             string[] m_strTopicsInfo = { "dataSensors", "alarms" };
 
 
