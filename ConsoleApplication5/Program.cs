@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -12,6 +13,9 @@ namespace ConsoleApplication5
 
     class Program
     {
+        static String ipAddress = ConfigurationSettings.AppSettings["ipAddressMessagingChannel"];
+        static String xsdAlarmPath = ConfigurationSettings.AppSettings["schemaAlarmPath"];
+        static String xsdSignalPath = ConfigurationSettings.AppSettings["schemaSignalPath"];
         static private string strValidateMsg;
         static private bool isValid = true;
 
@@ -35,11 +39,12 @@ namespace ConsoleApplication5
 
         }
 
+        #region VALIDATE XML with SCHEMA
         private static bool validateXml(XmlDocument xml, object topic)
         {
             if (topic.Equals("alarms"))
             {
-                xml.Schemas.Add(null, @"../../../../alarm.xsd");
+                xml.Schemas.Add(null, @xsdAlarmPath);
                 ValidationEventHandler handler = new ValidationEventHandler(MyValidationMethod);
 
                 xml.Validate(handler);
@@ -56,7 +61,7 @@ namespace ConsoleApplication5
 
             if (topic.Equals("dataSensors"))
             {
-                xml.Schemas.Add(null, @"../../../../signal.xsd");
+                xml.Schemas.Add(null, @xsdSignalPath);
                 ValidationEventHandler handler = new ValidationEventHandler(MyValidationMethod);
 
                 xml.Validate(handler);
@@ -89,7 +94,9 @@ namespace ConsoleApplication5
                     break;
             }
         }
+        #endregion
 
+        #region CREATE or ADD to existing LOG
         private static void adicionarAoLog(XmlNode node, string topic)
         {
 
@@ -126,7 +133,8 @@ namespace ConsoleApplication5
 
             novXml.Save(fileName);
         }
-
+        #endregion
+        
         static void Main(string[] args)
         {
 
@@ -138,8 +146,8 @@ namespace ConsoleApplication5
 
             // TODO: IMPRIMIR UM INTRODUCAO SOBRE O QUE ESTA A FAZER, EM QUE IP E QUAIS OS CANAIS SUBSCRITOS
 
-
-            MqttClient m_cClient = new MqttClient(IPAddress.Parse("192.168.237.193"));
+            
+            MqttClient m_cClient = new MqttClient(IPAddress.Parse(ipAddress));
             string[] m_strTopicsInfo = { "dataSensors", "alarms" };
 
 

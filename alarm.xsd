@@ -10,8 +10,8 @@
         <xs:element name="alarmDescription" type="descType"/>
         <xs:element name="date" type="dateType"/>
       </xs:sequence>
-      <xs:attribute name="parameterType" type="paramType"/>
-      <xs:attribute name="parameterId" type="xs:integer"/>
+      <xs:attribute name="parameterType" type="paramType" use="required"/>
+      <xs:attribute name="parameterId" type="xs:integer" use="required"/>
     </xs:complexType>
   </xs:element>
 
