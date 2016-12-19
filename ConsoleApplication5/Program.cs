@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
-using uPLibrary.Networking.M2Mqtt;
+using System.Xml.Schema;
 using uPLibrary.Networking.M2Mqtt.Messages;
 
 namespace ConsoleApplication5
@@ -15,20 +11,82 @@ namespace ConsoleApplication5
 
     class Program
     {
+        static private string strValidateMsg;
+        static private bool isValid = true;
+
         static void client_MqttMsgPublishReceived(object sender, MqttMsgPublishEventArgs e)
         {
 
             Console.WriteLine("Received = " + Encoding.UTF8.GetString(e.Message) + " on topic " + e.Topic);
 
-            //TODO: falta validar o schmea.. ou o caralho...
-
             XmlDocument xml = new XmlDocument();
             xml.LoadXml(Encoding.UTF8.GetString(e.Message));
+
+            if (!validateXml(xml, e.Topic))
+            {
+                Console.WriteLine("Invalid XML Structure\n");
+                return;
+            }
 
             XmlNode node = xml.SelectSingleNode(".");
 
             adicionarAoLog(node, e.Topic);
 
+        }
+
+        private static bool validateXml(XmlDocument xml, object topic)
+        {
+            if (topic.Equals("alarms"))
+            {
+                xml.Schemas.Add(null, @"../../../../alarm.xsd");
+                ValidationEventHandler handler = new ValidationEventHandler(MyValidationMethod);
+
+                xml.Validate(handler);
+
+                if (isValid)
+                {
+                    Console.WriteLine("Alarm structure: OK\n");
+                }
+                else
+                {
+                    Console.WriteLine("Alarm structure: INVALID\n" + strValidateMsg);
+                }
+            }
+
+            if (topic.Equals("dataSensors"))
+            {
+                xml.Schemas.Add(null, @"../../../../signal.xsd");
+                ValidationEventHandler handler = new ValidationEventHandler(MyValidationMethod);
+
+                xml.Validate(handler);
+
+                if (isValid)
+                {
+                    Console.WriteLine("Signal structure: OK\n");
+                }
+                else
+                {
+                    Console.WriteLine("Signal structure: INVALID\n" + strValidateMsg);
+                }
+            }
+            return isValid;
+        }
+
+        private static void MyValidationMethod(object sender, ValidationEventArgs args)
+        {
+            isValid = false;
+
+            switch (args.Severity)
+            {
+                case XmlSeverityType.Error:
+                    strValidateMsg = "Error: " + args.Message;
+                    break;
+                case XmlSeverityType.Warning:
+                    strValidateMsg = "Warning: " + args.Message;
+                    break;
+                default:
+                    break;
+            }
         }
 
         private static void adicionarAoLog(XmlNode node, string topic)
