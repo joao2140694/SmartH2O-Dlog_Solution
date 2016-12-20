@@ -7,8 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartH2O-Dlog", "ConsoleApp
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{28D34576-CF34-48C1-A244-189629BCB770}"
 	ProjectSection(SolutionItems) = preProject
-		alarm.xsd = alarm.xsd
-		signal.xsd = signal.xsd
+		alarms.xsd = alarms.xsd
+		dataSensors.xsd = dataSensors.xsd
 	EndProjectSection
 EndProject
 Global

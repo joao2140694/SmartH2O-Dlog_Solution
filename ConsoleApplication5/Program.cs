@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Net;
@@ -14,10 +15,15 @@ namespace ConsoleApplication5
     class Program
     {
         static String ipAddress = ConfigurationSettings.AppSettings["ipAddressMessagingChannel"];
-        static String xsdAlarmPath = ConfigurationSettings.AppSettings["schemaAlarmPath"];
-        static String xsdSignalPath = ConfigurationSettings.AppSettings["schemaSignalPath"];
+        static String xsdAlarmPath = ConfigurationSettings.AppSettings["alarmsXSD"];
+        static String xsdSignalPath = ConfigurationSettings.AppSettings["dataSensorsXSD"];
+        static List<string> topicsList = new List<string>(ConfigurationSettings.AppSettings["topics"].Split(new char[] { ';' }));
         static private string strValidateMsg;
         static private bool isValid = true;
+
+        private const string ALARMS_FILE_NAME = "alarms-data.xml";
+        private const string PARAM_FILE_NAME = "param-data.xml";
+
 
         static void client_MqttMsgPublishReceived(object sender, MqttMsgPublishEventArgs e)
         {
@@ -119,9 +125,22 @@ namespace ConsoleApplication5
         #region CREATE or ADD to existing LOG
         private static void adicionarAoLog(XmlNode node, string topic)
         {
+            //hardCoded porque o professor especificou estes nomes
+            string fileName;
+            if (topic == "alarms")
+            {
+                fileName = ALARMS_FILE_NAME;
+            }
+            else if (topic == "dataSensors")
+            {
+                fileName = PARAM_FILE_NAME;
+            }
+            else
+            {
+                fileName = topic + "-data.xml";
+            }
 
-            string fileName = topic + ".xml";
-            string path = (topic + ".xml").Equals("alarms.xml") ? xsdAlarmPath : xsdSignalPath;
+            string path = ConfigurationSettings.AppSettings[topic + "XSD"];
             Console.WriteLine(path);
 
             if (!File.Exists(fileName)) // Se o ficheiro nao existe e necessario criar um novo..
@@ -162,12 +181,19 @@ namespace ConsoleApplication5
             novXml.Save(fileName);
         }
         #endregion
-        
+
         static void Main(string[] args)
         {
             //TODO criar log
             MqttClient m_cClient = new MqttClient(IPAddress.Parse(ipAddress));
-            string[] m_strTopicsInfo = { "dataSensors", "alarms" };
+
+            string[] m_strTopicsInfo = new string[topicsList.Count];
+            for (int i = 0; i < topicsList.Count; i++)
+            {
+                m_strTopicsInfo[i] = topicsList[i];
+            }
+
+            //string[] m_strTopicsInfo = { "dataSensors", "alarms" };
 
 
             m_cClient.Connect(Guid.NewGuid().ToString());
