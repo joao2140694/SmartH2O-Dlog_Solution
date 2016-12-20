@@ -96,11 +96,33 @@ namespace ConsoleApplication5
         }
         #endregion
 
+        private static bool validateLogWithSchema(XmlDocument xml, String path)
+        {
+
+            xml.Schemas.Add(null, @path);
+            ValidationEventHandler handler = new ValidationEventHandler(MyValidationMethod);
+
+            xml.Validate(handler);
+
+            if (isValid)
+            {
+                Console.WriteLine("XML Structure: OK\n");
+            }
+            else
+            {
+                Console.WriteLine("XML Structure: INVALID\n" + strValidateMsg);
+            }
+
+            return isValid;
+        }
+
         #region CREATE or ADD to existing LOG
         private static void adicionarAoLog(XmlNode node, string topic)
         {
 
             string fileName = topic + ".xml";
+            string path = (topic + ".xml").Equals("alarms.xml") ? xsdAlarmPath : xsdSignalPath;
+            Console.WriteLine(path);
 
             if (!File.Exists(fileName)) // Se o ficheiro nao existe e necessario criar um novo..
             {
@@ -109,6 +131,12 @@ namespace ConsoleApplication5
 
             XmlDocument doc = new XmlDocument();
             doc.Load(fileName);
+
+            if (!validateLogWithSchema(doc, path))
+            {
+                Console.WriteLine("Invalid XML Structure\n");
+                return;
+            }
 
             XmlDocumentFragment xfrag = doc.CreateDocumentFragment();
             xfrag.InnerXml = node.OuterXml;
@@ -137,16 +165,7 @@ namespace ConsoleApplication5
         
         static void Main(string[] args)
         {
-
-            //test for git
-
-            //TODO: FALTA CRIAR A CONFIGUARACAO
-            // ADICIONAR LA O IP
-            // ADICIONAR OS TOPICOS A SUBSCREVER...
-
-            // TODO: IMPRIMIR UM INTRODUCAO SOBRE O QUE ESTA A FAZER, EM QUE IP E QUAIS OS CANAIS SUBSCRITOS
-
-            
+            //TODO criar log
             MqttClient m_cClient = new MqttClient(IPAddress.Parse(ipAddress));
             string[] m_strTopicsInfo = { "dataSensors", "alarms" };
 
