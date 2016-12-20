@@ -7,22 +7,13 @@
         <xs:element name="value" type="xs:decimal"/>
         <xs:element name="maxLimit" type="xs:int" minOccurs="0" maxOccurs="1"/>
         <xs:element name="minLimit" type="xs:int" minOccurs="0" maxOccurs="1"/>
-        <xs:element name="alarmDescription" type="descType"/>
+        <xs:element name="alarmDescription" type="xs:string"/>
         <xs:element name="date" type="dateType"/>
       </xs:sequence>
       <xs:attribute name="parameterType" type="paramType" use="required"/>
       <xs:attribute name="parameterId" type="xs:integer" use="required"/>
     </xs:complexType>
   </xs:element>
-
-  <xs:simpleType name="descType">
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="LESSTHAN"/>
-      <xs:enumeration value="EQUALS"/>
-      <xs:enumeration value="GREATERTHAN"/>
-      <xs:enumeration value="BETWEEN"/>
-    </xs:restriction>
-  </xs:simpleType>
 
   <xs:complexType name="dateType">
     <xs:sequence>
