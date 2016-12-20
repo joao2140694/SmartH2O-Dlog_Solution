@@ -195,7 +195,7 @@ namespace ConsoleApplication5
 
             //string[] m_strTopicsInfo = { "dataSensors", "alarms" };
 
-
+            //TODO handle excepetion
             m_cClient.Connect(Guid.NewGuid().ToString());
             if (!m_cClient.IsConnected)
             {
