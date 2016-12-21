@@ -30,6 +30,7 @@
         <xs:element name="minLimit" type="xs:int" minOccurs="0" maxOccurs="1"/>
         <xs:element name="alarmDescription" type="xs:string"/>
         <xs:element name="date" type="dateType"/>
+        <xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
       </xs:sequence>
       <xs:attribute name="parameterType" type="paramType" use="required"/>
       <xs:attribute name="parameterId" type="xs:integer" use="required"/>
